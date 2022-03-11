@@ -66,8 +66,15 @@ app.post("/add", (req, res) => {
       }
     );
   });
-
   res.send("회원가입완료");
+});
+
+app.delete("/delete", (req, res) => {
+  req.body._id = parseInt(req.body._id);
+  db.collection("post").deleteOne(req.body, (err, result) => {
+    console.log("삭제완료");
+    res.status(200).send({ message: "성공" });
+  });
 });
 
 /*
