@@ -47,12 +47,25 @@ app.get("/list", (req, res) => {
 });
 
 app.post("/add", (req, res) => {
-  db.collection("post").insertOne(
-    { title: req.body.title, date: req.body.date },
-    (error, result) => {
-      console.log("폼 데이터 저장완료");
-    }
-  );
+  // counter collection 에서 auto_increment 역할
+  db.collection("counter").findOne({ name: "게시물갯수" }, (err, result) => {
+    let total = result.totalPost;
+
+    // post collection 에 데이터 삽입. 하지만 totalPost가 업데이트되지 않아 id가 겹쳐서 삽입안됨.
+    db.collection("post").insertOne(
+      { _id: total + 1, title: req.body.title, date: req.body.date },
+      (error, result) => {
+        // counter collection 에서 totalPost update 해줌 -> 그러니 이제 삽입가능.
+        db.collection("counter").updateOne(
+          { name: "게시물갯수" },
+          { $inc: { totalPost: 1 } },
+          (err, result) => {
+            if (err) return console.log(err);
+          }
+        );
+      }
+    );
+  });
 
   res.send("회원가입완료");
 });
