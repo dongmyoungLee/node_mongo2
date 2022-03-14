@@ -77,6 +77,17 @@ app.delete("/delete", (req, res) => {
   });
 });
 
+app.get("/detail/:id", (req, res) => {
+  // params.id 가 string임 db의  type을 잘 맞춰줘야함.
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.id) },
+    (err, result) => {
+      console.log(result);
+      res.render("detail.ejs", { data: result });
+    }
+  );
+});
+
 /*
   rest API 6원칙
 
